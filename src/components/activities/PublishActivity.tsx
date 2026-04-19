@@ -91,7 +91,7 @@ export const PublishActivity = () => {
             </SheetTrigger>
 
             {/* EL FORMULARIO DESLIZABLE */}
-            <SheetContent side="bottom" className="rounded-t-2xl px-6 pb-8 pt-4 h-[auto] max-h-[90vh] overflow-y-auto">
+            <SheetContent side="bottom" className="rounded-t-2xl px-6 pb-8 pt-4 h-auto max-h-[90vh] overflow-y-auto">
                 <div className="mx-auto w-12 h-1.5 rounded-full bg-gray-200 mb-6" />
 
                 <SheetHeader className="text-left mb-6">
