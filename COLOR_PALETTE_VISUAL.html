@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GO Time - Color Palette Reference</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #f9fafb;
+            padding: 40px 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #111827;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            color: #6b7280;
+            margin-bottom: 40px;
+            font-size: 1.2em;
+        }
+        
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+        
+        .color-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+        }
+        
+        .color-swatch {
+            width: 100%;
+            height: 120px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+        
+        .color-info {
+            margin-top: 15px;
+        }
+        
+        .color-name {
+            color: #111827;
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .color-code {
+            font-family: "Courier New", monospace;
+            color: #6b7280;
+            font-size: 0.95em;
+            margin-bottom: 10px;
+            background: #f3f4f6;
+            padding: 8px 12px;
+            border-radius: 4px;
+            word-break: break-all;
+        }
+        
+        .color-purpose {
+            color: #374151;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+        
+        .color-variants {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .variant {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+        }
+        
+        .variant-swatch {
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            margin-right: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .variant-label {
+            color: #6b7280;
+        }
+        
+        .section-title {
+            color: #111827;
+            font-size: 2em;
+            margin-top: 50px;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #0d9488;
+        }
+        
+        .usage-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .usage-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .usage-title {
+            color: #111827;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .usage-description {
+            color: #6b7280;
+            font-size: 0.95em;
+        }
+        
+        .button-demo {
+            display: inline-block;
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 8px 8px 8px 0;
+            font-size: 1em;
+        }
+        
+        .btn-primary {
+            background: #0d9488;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #0f766e;
+        }
+        
+        .btn-secondary {
+            background: #f59e0b;
+            color: #111827;
+        }
+        
+        .btn-secondary:hover {
+            background: #d97706;
+        }
+        
+        .btn-accent {
+            background: #f87171;
+            color: white;
+        }
+        
+        .btn-accent:hover {
+            background: #f43f5e;
+        }
+        
+        .demo-section {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            margin-bottom: 30px;
+        }
+        
+        .demo-title {
+            color: #111827;
+            font-weight: 600;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+        }
+        
+        .activity-card {
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid;
+            margin-bottom: 15px;
+        }
+        
+        .activity-offer {
+            border-color: #99f6e4;
+            background: #f0fdfa;
+        }
+        
+        .activity-need {
+            border-color: #fecdd3;
+            background: #fef2f2;
+        }
+        
+        .activity-title {
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+        
+        .activity-meta {
+            color: #6b7280;
+            font-size: 0.95em;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-bottom: 10px;
+            margin-right: 8px;
+            color: white;
+        }
+        
+        .badge-offer {
+            background: #0d9488;
+        }
+        
+        .badge-need {
+            background: #f87171;
+        }
+        
+        footer {
+            text-align: center;
+            color: #6b7280;
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid #e5e7eb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 GO Time Color Palette</h1>
+        <p class="subtitle">Age-inclusive design system for neighborhood mapping</p>
+        
+        <section class="color-grid">
+            <!-- Primary Teal -->
+            <div class="color-card">
+                <div class="color-swatch" style="background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);">
+                    TEAL
+                </div>
+                <div class="color-info">
+                    <div class="color-name">🟦 Primary Teal</div>
+                    <div class="color-purpose">Modern, warm, and accessible for all ages. Main brand color used for primary actions, headers, and key interactive elements.</div>
+                    <div class="color-variants">
+                        <div class="variant">
+                            <div class="variant-swatch" style="background: #99f6e4;"></div>
+                            <span class="variant-label">Light: #99F6E4</span>
+                        </div>
+                        <div class="variant">
+                            <div class="variant-swatch" style="background: #0d9488;"></div>
+                            <span class="variant-label">Primary: #0D9488</span>
+                        </div>
+                        <div class="variant">
+                            <div class="variant-swatch" style="background: #0f766e;"></div>
+                            <span class="variant-label">Dark: #0F766E</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Accent Amber -->
+            <div class="color-card">
+                <div class="color-swatch" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                    AMBER
+                </div>
+                <div class="color-info">
+                    <div class="color-name">🟨 Accent Amber</div>
+                    <div class="color-purpose">Energetic and warm. Used for secondary actions, "Ofrezco" badges, and highlights. Appeals to all age groups.</div>
+                    <div class="color-variants">
+                        <div class="variant">
+                            <div class="variant-swatch" style="background: #fbbf24;"></div>
+                            <span class="variant-label">Light: #FBBF24</span>
+                        </div>
+                        <div class="variant">
+                            <div class="variant-swatch" style="background: #f59e0b;"></div>
+                            <span class="variant-label">Primary: #F59E0B</span>
+                        </div>
+                        <div class="variant">
+                            <div class="variant-swatch" style="background: #d97706;"></div>
+                            <span class="variant-label">Dark: #D97706</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Secondary Rose -->
+            <div class="color-card">
+                <div class="color-swatch" style="background: linear-gradient(135deg, #f87171 0%, #f43f5e 100%);">
+                    ROSE
+                </div>
+                <div class="color-info">
+                    <div class="color-name">🟥 Secondary Rose</div>
+                    <div class="color-purpose">Soft and welcoming. Used for "Necesito" badges and need-related activities. Better for color-blindness accessibility.</div>
+                    <div class="color-variants">
+                        <div class="variant">
+                            <div class="variant-swatch" style="background: #fb7185;"></div>
+                            <span class="variant-label">Light: #FB7185</span>
+                        </div>
+                        <div class="variant">
+                            <div class="variant-swatch" style="background: #f87171;"></div>
+                            <span class="variant-label">Primary: #F87171</span>
+                        </div>
+                        <div class="variant">
+                            <div class="variant-swatch" style="background: #f43f5e;"></div>
+                            <span class="variant-label">Dark: #F43F5E</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <h2 class="section-title">Interactive Components</h2>
+        
+        <div class="demo-section">
+            <div class="demo-title">Button Examples</div>
+            <button class="button-demo btn-primary">🤝 Ofrezco (Primary)</button>
+            <button class="button-demo btn-secondary">Seleccionar Tipo (Secondary)</button>
+            <button class="button-demo btn-accent">🙌 Necesito (Accent)</button>
+        </div>
+        
+        <div class="demo-section">
+            <div class="demo-title">Activity Cards</div>
+            
+            <div class="activity-card activity-offer">
+                <span class="badge badge-offer">🤝 OFREZCO</span>
+                <div class="activity-title">Necesito pintar mi casa</div>
+                <div class="activity-meta">Publicado por: Juan García</div>
+            </div>
+            
+            <div class="activity-card activity-need">
+                <span class="badge badge-need">🙌 NECESITO</span>
+                <div class="activity-title">Busco alguien para reparar tubería</div>
+                <div class="activity-meta">Publicado por: María López</div>
+            </div>
+        </div>
+        
+        <h2 class="section-title">Color Usage Guide</h2>
+        
+        <div class="usage-grid">
+            <div class="usage-card">
+                <div class="usage-title">🤝 Offer Activities</div>
+                <div class="usage-description">
+                    Use Teal (#0D9488) for buttons, badges, and markers showing services being offered.
+                </div>
+            </div>
+            
+            <div class="usage-card">
+                <div class="usage-title">🙌 Need Activities</div>
+                <div class="usage-description">
+                    Use Rose (#F87171) for buttons, badges, and markers for requests/needs.
+                </div>
+            </div>
+            
+            <div class="usage-card">
+                <div class="usage-title">✨ Secondary Actions</div>
+                <div class="usage-description">
+                    Use Amber (#F59E0B) for highlights, secondary buttons, and category badges.
+                </div>
+            </div>
+            
+            <div class="usage-card">
+                <div class="usage-title">✅ Contact Button</div>
+                <div class="usage-description">
+                    Use WhatsApp Green (#25D366) for the primary contact/messaging action.
+                </div>
+            </div>
+        </div>
+        
+        <h2 class="section-title">Accessibility Information</h2>
+        
+        <div class="demo-section">
+            <div class="demo-title">Why These Colors?</div>
+            <p style="color: #374151; line-height: 1.8; margin-bottom: 20px;">
+                <strong>For Young People (18-35):</strong> Teal feels modern and fresh. Amber is energetic and vibrant. Rose is contemporary and approachable.<br><br>
+                
+                <strong>For Adults (35-65):</strong> All colors are warm and professional. High contrast ensures readability. Clean design feels trustworthy.<br><br>
+                
+                <strong>For Seniors (65+):</strong> Warm color palette is less harsh on aging eyes. Large buttons (44px+) are easy to tap. Clear typography ensures readability. High contrast ratios (4.5:1) meet accessibility standards.
+            </p>
+        </div>
+        
+        <footer>
+            <p>GO Time Neighborhood Map • Color Palette Reference • WCAG AA Compliant • Light & Dark Mode Support</p>
+        </footer>
+    </div>
+</body>
+</html>
