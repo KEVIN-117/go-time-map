@@ -1,0 +1,23 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    match /activities/{activityId} {
+      // 1. Lectura: Cualquiera puede ver las actividades, pero solo las "activas"
+      allow read: if true
+
+      // 2. Creación: Abierta (por ahora), pero el payload DEBE tener la estructura correcta
+      allow create: if 
+        request.resource.data.keys().hasAll(['type', 'category', 'lat', 'lng', 'status', 'createdAt']) &&
+        (request.resource.data.type == 'offer' || request.resource.data.type == 'need') &&
+        request.resource.data.status == 'active';
+
+      // 3. Actualización: Solo permitir cambiar el estado (ej. para "completar" la ayuda)
+      allow update: if 
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status']);
+
+      // 4. Borrado: Bloqueado por seguridad en el MVP
+      allow delete: if false;
+    }
+  }
+}
