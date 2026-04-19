@@ -83,76 +83,82 @@ export const PublishActivity = () => {
             {/* EL BOTÓN FLOTANTE (FAB) */}
             <SheetTrigger asChild>
                 <Button
-                    className="absolute bottom-6 right-6 h-14 w-14 rounded-full shadow-2xl bg-slate-900 hover:bg-slate-800 text-white z-50"
+                    className="absolute bottom-6 right-6 h-16 w-16 rounded-full shadow-2xl bg-gradient-to-br from-primary to-teal-600 hover:from-primary hover:to-teal-700 text-white z-50 flex items-center justify-center group transition-all hover:scale-110"
                     size="icon"
                 >
-                    <Plus className="h-6 w-6" />
+                    <Plus className="h-8 w-8 group-hover:rotate-90 transition-transform" />
                 </Button>
             </SheetTrigger>
 
             {/* EL FORMULARIO DESLIZABLE */}
-            <SheetContent side="bottom" className="rounded-t-2xl px-6 pb-8 pt-4 h-[auto] max-h-[90vh] overflow-y-auto">
-                <div className="mx-auto w-12 h-1.5 rounded-full bg-gray-200 mb-6" />
+            <SheetContent side="bottom" className="rounded-t-3xl px-6 pb-10 pt-4 h-[auto] max-h-[90vh] overflow-y-auto bg-background border-t-2 border-muted">
+                <div className="mx-auto w-12 h-1.5 rounded-full bg-muted mb-6" />
 
-                <SheetHeader className="text-left mb-6">
-                    <SheetTitle className="text-2xl font-bold">Crear Publicación</SheetTitle>
+                <SheetHeader className="text-left mb-8">
+                    <SheetTitle className="text-3xl font-bold text-foreground">Crear Publicación</SheetTitle>
+                    <p className="text-sm text-muted-foreground mt-2">Ayuda a tu vecindario en 1 hora</p>
                 </SheetHeader>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Selector de Tipo */}
-                    <div className="grid grid-cols-2 gap-4">
-                        <Button
-                            type="button"
-                            variant={formData.type === "offer" ? "default" : "outline"}
-                            className={formData.type === "offer" ? "bg-emerald-500 hover:bg-emerald-600" : ""}
-                            onClick={() => setFormData({ ...formData, type: "offer" })}
-                        >
-                            🤝 Ofrezco
-                        </Button>
-                        <Button
-                            type="button"
-                            variant={formData.type === "need" ? "default" : "outline"}
-                            className={formData.type === "need" ? "bg-rose-500 hover:bg-rose-600" : ""}
-                            onClick={() => setFormData({ ...formData, type: "need" })}
-                        >
-                            🙌 Necesito
-                        </Button>
+                    <div>
+                        <Label className="text-sm font-semibold text-foreground mb-3 block">¿Qué quieres hacer?</Label>
+                        <div className="grid grid-cols-2 gap-3">
+                            <Button
+                                type="button"
+                                variant={formData.type === "offer" ? "default" : "outline"}
+                                className={`py-6 rounded-xl font-bold transition-all ${formData.type === "offer" ? "bg-teal-500 hover:bg-teal-600 text-white shadow-lg" : "border-2 border-muted hover:border-primary text-foreground"}`}
+                                onClick={() => setFormData({ ...formData, type: "offer" })}
+                            >
+                                🤝 Ofrezco
+                            </Button>
+                            <Button
+                                type="button"
+                                variant={formData.type === "need" ? "default" : "outline"}
+                                className={`py-6 rounded-xl font-bold transition-all ${formData.type === "need" ? "bg-rose-400 hover:bg-rose-500 text-white shadow-lg" : "border-2 border-muted hover:border-primary text-foreground"}`}
+                                onClick={() => setFormData({ ...formData, type: "need" })}
+                            >
+                                🙌 Necesito
+                            </Button>
+                        </div>
                     </div>
 
-                    <div className="space-y-2">
-                        <Label htmlFor="category">Categoría</Label>
+                    <div className="space-y-3">
+                        <Label htmlFor="category" className="text-sm font-semibold text-foreground">Categoría</Label>
                         <select
                             id="category"
-                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
+                            className="flex h-11 w-full rounded-lg border-2 border-muted bg-background px-4 py-2.5 text-base font-medium text-foreground ring-offset-background focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-colors"
                             value={formData.category}
                             onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                         >
-                            <option value="comida">Comida</option>
-                            <option value="herramientas">Herramientas</option>
-                            <option value="ayuda">Ayuda General</option>
-                            <option value="mascotas">Mascotas</option>
+                            <option value="comida">🍽️ Comida</option>
+                            <option value="herramientas">🔧 Herramientas</option>
+                            <option value="ayuda">💪 Ayuda General</option>
+                            <option value="mascotas">🐕 Mascotas</option>
                         </select>
                     </div>
 
-                    <div className="space-y-2">
-                        <Label htmlFor="title">Título corto</Label>
+                    <div className="space-y-3">
+                        <Label htmlFor="title" className="text-sm font-semibold text-foreground">Título corto</Label>
                         <Input
                             id="title"
                             placeholder="Ej: Necesito escalera por 2 horas"
                             required
                             maxLength={50}
+                            className="h-11 rounded-lg border-2 border-muted focus:border-primary text-base font-medium focus:ring-2 focus:ring-primary/20 transition-colors"
                             value={formData.title}
                             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                         />
                     </div>
 
-                    <div className="space-y-2">
-                        <Label htmlFor="description">Detalles</Label>
+                    <div className="space-y-3">
+                        <Label htmlFor="description" className="text-sm font-semibold text-foreground">Detalles</Label>
                         <Textarea
                             id="description"
                             placeholder="Explica un poco más para que tus vecinos entiendan..."
                             required
-                            rows={3}
+                            rows={4}
+                            className="rounded-lg border-2 border-muted focus:border-primary text-base font-medium focus:ring-2 focus:ring-primary/20 transition-colors resize-none"
                             value={formData.description}
                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                         />
@@ -160,7 +166,7 @@ export const PublishActivity = () => {
 
                     <Button
                         type="submit"
-                        className="w-full font-bold py-6 text-base"
+                        className="w-full font-bold py-6 text-base bg-primary hover:bg-primary/90 text-white rounded-xl shadow-lg transition-all mt-8"
                         disabled={isPending || isLocating}
                     >
                         {isLocating ? (
@@ -168,7 +174,10 @@ export const PublishActivity = () => {
                                 <MapPin className="animate-bounce h-5 w-5" /> Obteniendo GPS...
                             </span>
                         ) : isPending ? (
-                            "Publicando..."
+                            <span className="flex items-center gap-2">
+                                <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                                Publicando...
+                            </span>
                         ) : (
                             "Publicar en el mapa"
                         )}

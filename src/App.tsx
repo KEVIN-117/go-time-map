@@ -10,8 +10,11 @@ function App() {
 
   if (isLoading) {
     return (
-      <div className="w-full h-dvh flex items-center justify-center bg-gray-50">
-        <p className="text-gray-500 animate-pulse">Cargando mapa de Cochabamba...</p>
+      <div className="w-full h-dvh flex items-center justify-center bg-gradient-to-br from-background to-blue-50">
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-muted border-t-primary"></div>
+          <p className="text-lg font-medium text-foreground animate-pulse">Cargando mapa de Cochabamba...</p>
+        </div>
       </div>
     );
   }
@@ -19,7 +22,7 @@ function App() {
   // ... (manejo de isError se mantiene igual)
 
   return (
-    <main className="relative w-full h-dvh overflow-hidden bg-gray-100">
+    <main className="relative w-full h-dvh overflow-hidden bg-background">
       <CoreMap
         activities={activities}
         onMarkerClick={setSelectedActivityId}
