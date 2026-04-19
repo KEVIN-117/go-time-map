@@ -33,6 +33,16 @@ export const ActivityDetailSheet = ({ activityId, isOpen, onClose }: ActivityDet
             <SheetContent side="bottom" className="rounded-t-3xl px-6 pb-10 pt-4 h-auto max-h-[90vh] xl:w-[50vw] md:w-[70vw] sm:w-screen mx-auto overflow-y-auto bg-background border-t-2 border-muted">
                 <div className="mx-auto w-12 h-1.5 rounded-full bg-muted mb-6" />
 
+                {activity.imageUrl && (
+                    <div className="mb-6 rounded-lg overflow-hidden border-2 border-muted shadow-md">
+                        <img
+                            src={activity.imageUrl}
+                            alt={activity.title}
+                            className="w-full h-64 object-cover"
+                        />
+                    </div>
+                )}
+
                 <SheetHeader className="text-left space-y-3 mb-6">
                     <div className="flex items-center gap-3">
                         <span className={`px-3 py-1.5 rounded-full text-sm font-bold text-white shadow-md ${isOffer ? "bg-teal-500" : "bg-rose-400"}`}>

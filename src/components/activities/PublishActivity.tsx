@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { Plus, MapPin } from "lucide-react";
+import { useState, useRef } from "react";
+import { Plus, MapPin, Image as ImageIcon, X } from "lucide-react";
+import { uploadImageToBlob } from "../../lib/blob";
 import {
     Sheet,
     SheetContent,
@@ -16,6 +17,9 @@ import { useAddActivity } from "../../hooks/useActivities";
 export const PublishActivity = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [isLocating, setIsLocating] = useState(false);
+    const [isUploadingImage, setIsUploadingImage] = useState(false);
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
     const { mutateAsync: addActivity, isPending } = useAddActivity();
 
     // Estado del formulario
@@ -25,7 +29,53 @@ export const PublishActivity = () => {
         title: "",
         description: "",
         author: "Kevin", // En el futuro esto vendrá del sistema de Auth
+        imageUrl: undefined as string | undefined,
     });
+
+    const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        // Validar tipo de archivo
+        if (!file.type.startsWith("image/")) {
+            alert("Por favor selecciona una imagen válida");
+            return;
+        }
+
+        // Validar tamaño (máximo 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            alert("La imagen debe ser menor a 5MB");
+            return;
+        }
+
+        // Mostrar preview
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            setImagePreview(e.target?.result as string);
+        };
+        reader.readAsDataURL(file);
+
+        // Subir a Blob
+        setIsUploadingImage(true);
+        try {
+            const imageUrl = await uploadImageToBlob(file);
+            setFormData({ ...formData, imageUrl });
+        } catch (error) {
+            console.error("Error al subir imagen:", error);
+            alert("Hubo un error al subir la imagen. Intenta de nuevo.");
+            setImagePreview(null);
+        } finally {
+            setIsUploadingImage(false);
+        }
+    };
+
+    const handleRemoveImage = () => {
+        setImagePreview(null);
+        setFormData({ ...formData, imageUrl: undefined });
+        if (fileInputRef.current) {
+            fileInputRef.current.value = "";
+        }
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -40,7 +90,8 @@ export const PublishActivity = () => {
 
             // 3. Limpiar y cerrar
             setIsOpen(false);
-            setFormData({ ...formData, title: "", description: "" });
+            setFormData({ type: "offer", category: "ayuda", title: "", description: "", author: "Kevin", imageUrl: undefined });
+            setImagePreview(null);
         } catch (error) {
             console.error("Error al publicar:", error);
             alert("Hubo un error al publicar. Intenta de nuevo.");
@@ -162,6 +213,51 @@ export const PublishActivity = () => {
                             value={formData.description}
                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                         />
+                    </div>
+
+                    <div className="space-y-3">
+                        <Label className="text-sm font-semibold text-foreground">Foto (opcional)</Label>
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageSelect}
+                            disabled={isUploadingImage}
+                            className="hidden"
+                        />
+                        {imagePreview ? (
+                            <div className="relative rounded-lg overflow-hidden border-2 border-primary bg-primary/5">
+                                <img
+                                    src={imagePreview}
+                                    alt="Preview"
+                                    className="w-full h-48 object-cover"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={handleRemoveImage}
+                                    className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white p-2 rounded-full transition-colors"
+                                >
+                                    <X className="h-4 w-4" />
+                                </button>
+                            </div>
+                        ) : (
+                            <button
+                                type="button"
+                                onClick={() => fileInputRef.current?.click()}
+                                disabled={isUploadingImage}
+                                className="w-full border-2 border-dashed border-muted hover:border-primary rounded-lg p-6 transition-colors flex items-center justify-center gap-3 hover:bg-primary/5 disabled:opacity-50"
+                            >
+                                <ImageIcon className="h-5 w-5 text-muted-foreground" />
+                                <div className="text-left">
+                                    <p className="font-medium text-foreground">
+                                        {isUploadingImage ? "Subiendo imagen..." : "Añade una foto"}
+                                    </p>
+                                    <p className="text-xs text-muted-foreground">
+                                        PNG, JPG o GIF (máximo 5MB)
+                                    </p>
+                                </div>
+                            </button>
+                        )}
                     </div>
 
                     <Button
