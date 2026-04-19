@@ -42,7 +42,7 @@ export const CoreMap = ({ activities, onMarkerClick }: CoreMapProps) => {
                     attribution='&copy; <a href="https://carto.com/">Carto</a>'
                 />
 
-                {activities.map((activity) => (
+                {activities && activities.map((activity) => (
                     <Marker
                         key={activity.id}
                         position={[activity.lat, activity.lng]}

@@ -5,7 +5,7 @@ import { ActivityDetailSheet } from "./components/activities/ActivityDetailSheet
 import { PublishActivity } from "./components/activities/PublishActivity"; // <-- NUEVO
 
 function App() {
-  const { data: activities, isLoading, isError } = useActivities();
+  const { data: activities, isLoading } = useActivities();
   const [selectedActivityId, setSelectedActivityId] = useState<string | null>(null);
 
   if (isLoading) {
@@ -21,7 +21,7 @@ function App() {
   return (
     <main className="relative w-full h-dvh overflow-hidden bg-gray-100">
       <CoreMap
-        activities={activities}
+        activities={activities!}
         onMarkerClick={setSelectedActivityId}
       />
 
