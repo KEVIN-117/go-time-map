@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { Plus, MapPin, Image as ImageIcon, X } from "lucide-react";
-import { uploadImageToBlob } from "../../lib/blob";
+import { uploadImageToCloudinary } from "../../lib/blob";
 import {
     Sheet,
     SheetContent,
@@ -14,25 +14,29 @@ import { Textarea } from "../ui/textarea";
 import { Label } from "../ui/label";
 import { useAddActivity } from "../../hooks/useActivities";
 
+const INITIAL_FORM_STATE = {
+    type: "offer" as "offer" | "need",
+    category: "ayuda",
+    title: "",
+    description: "",
+    author: "Kevin", // En el futuro esto vendrá del sistema de Auth
+};
+
 export const PublishActivity = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [isLocating, setIsLocating] = useState(false);
     const [isUploadingImage, setIsUploadingImage] = useState(false);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { mutateAsync: addActivity, isPending } = useAddActivity();
 
-    // Estado del formulario
-    const [formData, setFormData] = useState({
-        type: "offer" as "offer" | "need",
-        category: "ayuda",
-        title: "",
-        description: "",
-        author: "Kevin", // En el futuro esto vendrá del sistema de Auth
-        imageUrl: undefined as string | undefined,
-    });
+    // Estado del formulario centralizado
+    const [formData, setFormData] = useState(INITIAL_FORM_STATE);
 
-    const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    // 1. Mostrar Preview (NO sube a la nube todavía)
+    const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
@@ -48,93 +52,81 @@ export const PublishActivity = () => {
             return;
         }
 
-        // Mostrar preview
+        // Guardar archivo en memoria y crear preview local
+        setSelectedFile(file);
         const reader = new FileReader();
-        reader.onload = (e) => {
-            setImagePreview(e.target?.result as string);
+        reader.onload = (event) => {
+            setImagePreview(event.target?.result as string);
         };
         reader.readAsDataURL(file);
-
-        // Subir a Blob
-        setIsUploadingImage(true);
-        try {
-            const imageUrl = await uploadImageToBlob(file);
-            setFormData({ ...formData, imageUrl });
-        } catch (error) {
-            console.error("Error al subir imagen:", error);
-            alert("Hubo un error al subir la imagen. Intenta de nuevo.");
-            setImagePreview(null);
-        } finally {
-            setIsUploadingImage(false);
-        }
     };
 
+    // 2. Remover imagen antes de publicar
     const handleRemoveImage = () => {
         setImagePreview(null);
-        setFormData({ ...formData, imageUrl: undefined });
+        setSelectedFile(null);
         if (fileInputRef.current) {
             fileInputRef.current.value = "";
         }
     };
 
+    // 3. Manejar envío final (GPS + Cloudinary + Firebase)
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLocating(true);
-        try {
-            // 2. Enviar a Firebase
-            await addActivity({
-                ...formData,
-                lat: -17.3964373,//position.coords.latitude,
-                lng: -66.1583299,//position.coords.longitude,
-            });
 
-            // 3. Limpiar y cerrar
-            setIsOpen(false);
-            setFormData({ type: "offer", category: "ayuda", title: "", description: "", author: "Kevin", imageUrl: undefined });
-            setImagePreview(null);
-        } catch (error) {
-            console.error("Error al publicar:", error);
-            alert("Hubo un error al publicar. Intenta de nuevo.");
-        } finally {
-            setIsLocating(false);
-        }
+        // Obtener la ubicación real del celular
+        navigator.geolocation.getCurrentPosition(
+            async (position) => {
+                try {
+                    let finalImageUrl = undefined;
 
-        // 1. Obtener la ubicación real del celular
-        // navigator.geolocation.getCurrentPosition(
-        //     async (position) => {
-        //         try {
-        //             // 2. Enviar a Firebase
-        //             await addActivity({
-        //                 ...formData,
-        //                 lat: -17.3964373,//position.coords.latitude,
-        //                 lng: -66.1583299,//position.coords.longitude,
-        //             });
+                    // A. Subir imagen a Cloudinary SOLO si hay un archivo seleccionado y vamos a publicar
+                    if (selectedFile) {
+                        setIsUploadingImage(true);
+                        // IMPORTANTE: Asegúrate de que tu método de Cloudinary reciba el archivo o el base64
+                        finalImageUrl = await uploadImageToCloudinary(selectedFile);
+                        setIsUploadingImage(false);
+                    }
 
-        //             // 3. Limpiar y cerrar
-        //             setIsOpen(false);
-        //             setFormData({ ...formData, title: "", description: "" });
-        //         } catch (error) {
-        //             console.error("Error al publicar:", error);
-        //             alert("Hubo un error al publicar. Intenta de nuevo.");
-        //         } finally {
-        //             setIsLocating(false);
-        //         }
-        //     },
-        //     (error) => {
-        //         console.error("Error de GPS:", error);
-        //         alert("Necesitamos tu ubicación para colocar el pin en el mapa.");
-        //         setIsLocating(false);
-        //     },
-        //     { enableHighAccuracy: true } // Crucial para móviles
-        // );
+                    // B. Enviar a Firebase
+                    await addActivity({
+                        ...formData,
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude,
+                        imageUrl: finalImageUrl,
+                    });
+
+                    // C. Limpiar y cerrar
+                    setIsOpen(false);
+                    setFormData(INITIAL_FORM_STATE);
+                    handleRemoveImage();
+                } catch (error) {
+                    console.error("Error al publicar:", error);
+                    alert("Hubo un error al publicar. Intenta de nuevo.");
+                    setIsUploadingImage(false);
+                } finally {
+                    setIsLocating(false);
+                }
+            },
+            (error) => {
+                console.error("Error de GPS:", error);
+                alert("Necesitamos tu ubicación para colocar el pin en el mapa.");
+                setIsLocating(false);
+            },
+            { enableHighAccuracy: true } // Crucial para móviles
+        );
     };
+
+    // Variable derivada para bloquear el botón si hay algún proceso en curso
+    const isProcessing = isPending || isLocating || isUploadingImage;
 
     return (
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
             {/* EL BOTÓN FLOTANTE (FAB) */}
             <SheetTrigger asChild>
                 <Button
-                    className="absolute bottom-6 right-6 h-16 w-16 rounded-full shadow-2xl bg-gradient-to-br from-primary to-teal-600 hover:from-primary hover:to-teal-700 text-white z-50 flex items-center justify-center group transition-all hover:scale-110"
+                    className="absolute bottom-6 right-6 h-16 w-16 rounded-full shadow-2xl bg-linear-to-br from-primary to-teal-600 hover:from-primary hover:to-teal-700 text-white z-50 flex items-center justify-center group transition-all hover:scale-110"
                     size="icon"
                 >
                     <Plus className="h-8 w-8 group-hover:rotate-90 transition-transform" />
@@ -142,7 +134,7 @@ export const PublishActivity = () => {
             </SheetTrigger>
 
             {/* EL FORMULARIO DESLIZABLE */}
-            <SheetContent side="bottom" className="rounded-t-3xl px-6 pb-10 pt-4 h-[auto] max-h-[90vh] overflow-y-auto bg-background border-t-2 border-muted">
+            <SheetContent side="bottom" className="rounded-t-3xl px-6 pb-10 pt-4 h-auto max-h-[90vh] xl:w-[50vw] md:w-[70vw] sm:w-screen mx-auto overflow-y-auto bg-background border-t-2 border-muted">
                 <div className="mx-auto w-12 h-1.5 rounded-full bg-muted mb-6" />
 
                 <SheetHeader className="text-left mb-8">
@@ -222,7 +214,7 @@ export const PublishActivity = () => {
                             type="file"
                             accept="image/*"
                             onChange={handleImageSelect}
-                            disabled={isUploadingImage}
+                            disabled={isProcessing}
                             className="hidden"
                         />
                         {imagePreview ? (
@@ -244,17 +236,13 @@ export const PublishActivity = () => {
                             <button
                                 type="button"
                                 onClick={() => fileInputRef.current?.click()}
-                                disabled={isUploadingImage}
+                                disabled={isProcessing}
                                 className="w-full border-2 border-dashed border-muted hover:border-primary rounded-lg p-6 transition-colors flex items-center justify-center gap-3 hover:bg-primary/5 disabled:opacity-50"
                             >
                                 <ImageIcon className="h-5 w-5 text-muted-foreground" />
                                 <div className="text-left">
-                                    <p className="font-medium text-foreground">
-                                        {isUploadingImage ? "Subiendo imagen..." : "Añade una foto"}
-                                    </p>
-                                    <p className="text-xs text-muted-foreground">
-                                        PNG, JPG o GIF (máximo 5MB)
-                                    </p>
+                                    <p className="font-medium text-foreground">Añade una foto</p>
+                                    <p className="text-xs text-muted-foreground">PNG, JPG o GIF (máximo 5MB)</p>
                                 </div>
                             </button>
                         )}
@@ -263,11 +251,15 @@ export const PublishActivity = () => {
                     <Button
                         type="submit"
                         className="w-full font-bold py-6 text-base bg-primary hover:bg-primary/90 text-white rounded-xl shadow-lg transition-all mt-8"
-                        disabled={isPending || isLocating}
+                        disabled={isProcessing}
                     >
                         {isLocating ? (
                             <span className="flex items-center gap-2">
-                                <MapPin className="animate-bounce h-5 w-5" /> Obteniendo GPS...
+                                <MapPin className="animate-bounce h-5 w-5" /> Ubicando...
+                            </span>
+                        ) : isUploadingImage ? (
+                            <span className="flex items-center gap-2">
+                                <ImageIcon className="animate-pulse h-5 w-5" /> Subiendo foto...
                             </span>
                         ) : isPending ? (
                             <span className="flex items-center gap-2">
