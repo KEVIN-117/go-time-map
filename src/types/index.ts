@@ -8,6 +8,7 @@ export interface Activity {
     title: string;
     description: string;
     author: string;
+    imageUrl?: string;
     createdAt: any;
 }
 

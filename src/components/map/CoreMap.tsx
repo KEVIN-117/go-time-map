@@ -15,16 +15,17 @@ const DEFAULT_CENTER: [number, number] = [-17.38195, -66.15995];
 
 // Helper para crear íconos personalizados rápidos y sin imágenes externas
 const createCustomIcon = (type: "offer" | "need") => {
-    const color = type === "offer" ? "bg-emerald-500" : "bg-rose-500";
+    const color = type === "offer" ? "bg-teal-500" : "bg-rose-400";
+    const borderColor = type === "offer" ? "border-teal-600" : "border-rose-500";
     const emoji = type === "offer" ? "🤝" : "🙌";
 
     return L.divIcon({
         className: "custom-div-icon",
-        html: `<div class="${color} text-white w-12 h-12 flex items-center justify-center rounded-full shadow-lg border-2 border-white text-lg">
+        html: `<div class="${color} ${borderColor} text-white w-14 h-14 flex items-center justify-center rounded-full shadow-2xl border-3 text-xl font-semibold hover:scale-110 transition-transform">
              ${emoji}
            </div>`,
-        iconSize: [60, 60],
-        iconAnchor: [16, 16],
+        iconSize: [56, 56],
+        iconAnchor: [28, 28],
     });
 };
 
